@@ -72,3 +72,5 @@ this project is not mature yet.
 ## Cool Will Geode Add This Library To Their Repositories?
 I don't know, I doubt it but you'll just have to ask them and be paitient about it.
 
+## Bugs
+-  Platform uses the `None` Keyword Enum and this can be confusing to python users and is also uncompilable. This change is an Internal bug on broma's end and not my own fault
