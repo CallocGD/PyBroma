@@ -1,4 +1,4 @@
-from setuptools import Extension, setup
+from setuptools import Extension, setup, find_packages
 from Cython.Build import cythonize
 import sys
 
@@ -7,6 +7,7 @@ import sys
 def compilePyBroma():
     setup(
         author="Calloc",
+        py_modules=find_packages("pybroma*"),
         ext_modules=cythonize(
             [
                 Extension(
