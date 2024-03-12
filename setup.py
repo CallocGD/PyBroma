@@ -2,10 +2,13 @@ from setuptools import Extension, setup, find_packages
 from Cython.Build import cythonize
 import sys
 
+
+__version__ = "0.0.1"
 # TODO: A Way to Automate Updates with workflows to Compiling Broma to .lib and .so would be nice... 
 
 def compilePyBroma():
     setup(
+        version=__version__,
         author="Calloc",
         py_modules=find_packages("pybroma*"),
         ext_modules=cythonize(
@@ -19,7 +22,8 @@ def compilePyBroma():
                 )
             ]
         ),
-        include_package_data=True
+        include_package_data=True,
+        name="pybroma",
     )
 
 if __name__ == "__main__":
