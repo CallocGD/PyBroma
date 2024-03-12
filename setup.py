@@ -1,16 +1,14 @@
-from setuptools import Extension, setup, find_packages
+from setuptools import Extension, setup, find_namespace_packages
 from Cython.Build import cythonize
 import sys
 
-
-__version__ = "0.0.1"
 # TODO: A Way to Automate Updates with workflows to Compiling Broma to .lib and .so would be nice... 
 
 def compilePyBroma():
     setup(
-        version=__version__,
+        name="pybroma",
         author="Calloc",
-        py_modules=find_packages("pybroma*"),
+        py_modules=find_namespace_packages(include="pybroma*"),
         ext_modules=cythonize(
             [
                 Extension(
@@ -22,8 +20,7 @@ def compilePyBroma():
                 )
             ]
         ),
-        include_package_data=True,
-        name="pybroma",
+        include_package_data=True,        
     )
 
 if __name__ == "__main__":
@@ -31,3 +28,4 @@ if __name__ == "__main__":
         # I need a ".so" file first :( sorry linux/android/mac/ios users...
         raise RuntimeError("Windows is the only platform supported at the moment if you provide me a broma.so file on github we could support other platforms...")
     compilePyBroma()
+
