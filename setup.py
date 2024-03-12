@@ -8,7 +8,7 @@ def compilePyBroma():
     setup(
         name="pybroma",
         author="Calloc",
-        py_modules=find_namespace_packages(include="pybroma*"),
+        packages=find_namespace_packages(include="pybroma*"),
         ext_modules=cythonize(
             [
                 Extension(
