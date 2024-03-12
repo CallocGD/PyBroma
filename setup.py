@@ -18,7 +18,8 @@ def compilePyBroma():
                     extra_compile_args=["/std:c++17" if sys.platform == "win32" else "--std:c++17"],
                 )
             ]
-        )
+        ),
+        include_package_data=True
     )
 
 if __name__ == "__main__":
