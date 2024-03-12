@@ -1,7 +1,7 @@
 from .PyBroma import *
-from enum import IntEnum
+from enum import IntFlag
 
-class Platform(IntEnum):
+class Platform(IntFlag):
 	"""Special Platform Number NOTE: 
 	This hasn't been merged to cython yet due to 
 	compatability issues with Broma itself..."""
@@ -12,3 +12,4 @@ class Platform(IntEnum):
 	iOS = 8
 	Android32 = 16
 	Android64 = 32
+
