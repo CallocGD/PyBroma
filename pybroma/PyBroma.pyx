@@ -46,6 +46,10 @@ cdef class Type:
     def __eq__(self, Type t):
         return broma.TypeEquals(self.type, t)
 
+    @property
+    def is_struct():
+        return self.type.is_struct
+
 
 
 cdef Type make_type(broma.Type t) noexcept:
