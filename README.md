@@ -64,7 +64,7 @@ python setup.py build_ext --inplace
 I will put another command here soon that you can use this library globally
 I've also only just setup windows support so sorry android, linux , macos & ios users.
 However making pull requests and adding .so files might help or even an automated workflow 
-to compile broma. I would apperciate if anyone does this while iI'm doing other things.
+to compile broma. I would apperciate if anyone does this while I'm doing other things.
 
 Also Some parsing Error Features may not be avalible just yet so don't complain to me if it crashes
 this project is not mature yet.
