@@ -47,9 +47,8 @@ cdef class Type:
         return broma.TypeEquals(self.type, t)
 
     @property
-    def is_struct():
+    def is_struct(self):
         return self.type.is_struct
-
 
 
 cdef Type make_type(broma.Type t) noexcept:
@@ -202,10 +201,18 @@ cdef class PadField:
         pass 
     @property
     def amount(self):
-        return make_PlatfornNum(self.amount)
+        return make_PlatfornNum(self.pf.amount)
 
+cdef broma.PlatformNumber dummyPadFieldattr():
+    cdef broma.PlatformNumber pn
+    pn.win = 0
+    pn.mac = 0
+    pn.android32 = 0
+    pn.android64 = 0
+    pn.ios = 0
+    return pn
 
-cdef PadField make_PadField(broma.PadField pf) noexcept:
+cdef PadField make_PadField(broma.PadField pf):
     cdef PadField _pf = PadField()
     _pf.pf = pf
     return _pf
@@ -218,9 +225,11 @@ cdef class Field:
     def __cinit__(self):
         pass
     
-    @property
-    def id(self):
-        return self.field.id
+    property id:
+        def __get__(self):
+            return self.field.field_id
+        def __set__(self, obj):
+            raise ImmutableError("id")
 
     @property
     def parent(self):
@@ -286,9 +295,10 @@ cdef class PlatformNumber:
 
 
 
+
 cdef PlatformNumber make_PlatfornNum(broma.PlatformNumber pn) noexcept:
     cdef PlatformNumber f = PlatformNumber()
-    f.binds = pn    
+    f.binds = pn
     return f
 
 

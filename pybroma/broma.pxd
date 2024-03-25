@@ -10,7 +10,7 @@ ctypedef long long ptrdiff_t
 
 cdef extern from "include/ast.hpp" namespace "broma" nogil:
     # NOTE: "None" can't be used as a keyword in python...
-    # TODO: Throw an issue on geode-sdk/Broma about this problem 
+    # TODO: Throw an issue on Broma about the problem 
     enum class Platform:
         # None = 0 # Currently Invalid and impossible to compile 
         Mac = 1
