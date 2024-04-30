@@ -52,25 +52,36 @@ for c in root.classes:
 - To generate code to automate the creation of mods and be able to reverse engineer geometry dash a little bit 
 more efficiently. Including creating ghidra headerfiles that ghidra can understand and parse.
 - For other programmers (especially beginner programmers) to try out this wonderful library that I have just recently made a bridge for in one full day. (I would expect that you have a bit of knowlege on how C++ works first.)
-- To go beyond the scope of what broma is actually being used for.
+- To go far beyond the scope of what broma is actually being used for such as reverse engineering. 
 
 ## Cool When Pypi Release?
-I'm not ready for that yet since it's difficult to configure that stuff. For now you will have to download the files and manually to setup this library since this project just got started yesterday.
+I may not get to that due to the required 2FA stuff because scammers were using pypi to host malicious malware.  
 
 # How To Install
+There's 2 ways to do this but the conventional way is to install GIT and use it locally.
+
+```
+git clone https://github.com/CallocGD
+```
 ```
 python setup.py build_ext --inplace
 ```
-I will put another command here soon that you can use this library globally
-I've also only just setup windows support so sorry android, linux , macos & ios users.
-However making pull requests and adding .so files might help or even an automated workflow 
-to compile broma. I would apperciate if anyone does this while I'm doing other things.
+
+The other way is to install this package globally as a zip file such as for example 
+```
+pip install https://github.com/CallocGD/PyBroma/archive/refs/heads/main.zip
+```
+know that I have not compiled the sources for linux or mac yet. If you need to use this project on those versions I suggest sending me a 
+pull request with the propper platform versions you want to have implemented in place.
 
 Also Some parsing Error Features may not be avalible just yet so don't complain to me if it crashes
 this project is not mature yet.
 
 ## Cool Will Geode Add This Library To Their Repositories?
 I don't know, I doubt it but you'll just have to ask them and be paitient about it.
+
+## Anything else
+Might make a version of this in Rust as practice for binding C/C++ libraries since I am trying to learn how to do that kind of stuff.
 
 ## Bugs
 -  Platform uses the `None` Keyword Enum and this can be confusing to python users and is also uncompilable. This change is an Internal bug on broma's end and not my own fault
