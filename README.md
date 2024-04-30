@@ -71,14 +71,14 @@ The other way is to install this package globally as a zip file such as for exam
 ```
 pip install https://github.com/CallocGD/PyBroma/archive/refs/heads/main.zip
 ```
-know that I have not compiled the sources for linux or mac yet. If you need to use this project on those versions I suggest sending me a 
-pull request with the propper platform versions you want to have implemented in place.
+Know that I have not compiled the sources for linux or mac yet. If you need to use this project on those 
+versions I suggest sending me a pull request with the propper platform versions you want to have me implement 
+in place.
 
-Also Some parsing Error Features may not be avalible just yet so don't complain to me if it crashes
-this project is not mature yet.
+Also Some parsing Error Features may not be avalible just yet so don't complain to me if it crashes broma does not have a clean way to handle errors yet to my knowlege.
 
 ## Cool Will Geode Add This Library To Their Repositories?
-I don't know, I doubt it but you'll just have to ask them and be paitient about it.
+I don't know, I sure hope so, I see the project's overall potential to be useful for that criteria but I doubt it. You'll just have to ask them and be paitient about it.
 
 ## Anything else
 Might make a version of this in Rust as practice for binding C/C++ libraries since I am trying to learn how to do that kind of stuff.
