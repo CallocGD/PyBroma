@@ -8,22 +8,21 @@ from libcpp.utility cimport pair
 
 ctypedef long long ptrdiff_t
 
-cdef extern from "include/ast.hpp" namespace "broma" nogil:
-    # NOTE: "None" can't be used as a keyword in python...
-    # TODO: Throw an issue on Broma about the problem 
+cdef extern from "include/Broma/include/ast.hpp" namespace "broma" nogil:
+    
     enum class Platform:
-        # None = 0 # Currently Invalid and impossible to compile 
-        Mac = 1
-        Windows = 2
-        Android = 4
-        iOS = 8
-        Android32 = 16
-        Android64 = 32
+        pass
 
+    struct Attributes:
+        string docs # Any docstring pulled from a `[[docs(...)]]` attribute.
+        Platform links # All the platforms that link the class or function
+        Platform missing # All the platforms that are missing the class or function
+        vector[string] depends # List of classes that this class or function depends on
 
     # offsets for each platform
     struct PlatformNumber:
-        ptrdiff_t mac
+        ptrdiff_t imac
+        ptrdiff_t m1
         ptrdiff_t ios
         ptrdiff_t win
         ptrdiff_t android32
@@ -34,9 +33,9 @@ cdef extern from "include/ast.hpp" namespace "broma" nogil:
         bint is_struct
      
     struct FunctionProto:
+        
         Type ret # The return type of the function.
         vector[pair[Type, string]] args # All arguments, represented by their type and their name.
-        string docs # Any docstring pulled from a `[[docs(...)]]` attribute.
         string name # The function's name.
 
     enum class FunctionType:
@@ -45,9 +44,9 @@ cdef extern from "include/ast.hpp" namespace "broma" nogil:
         Dtor = 2 # A destructor.
      
     struct MemberFunctionProto:
+        Attributes attributes 
         Type ret # The return type of the function.
         vector[pair[Type, string]] args # All arguments, represented by their type and their name.
-        string docs # Any docstring pulled from a `[[docs(...)]]` attribute.
         string name # The function's name.
         FunctionType type
         bint is_const
@@ -57,6 +56,7 @@ cdef extern from "include/ast.hpp" namespace "broma" nogil:
 
     # @brief A class's member variables.
     struct MemberField:
+        Platform platform # For platform-specific members, all platforms this member is defined on 
         string name # The name of the field.
         Type type # The type of the field.
         size_t count # The number of elements in the field when it's an array (pretty much unused since we use array).
@@ -71,41 +71,29 @@ cdef extern from "include/ast.hpp" namespace "broma" nogil:
     struct FunctionBindField:
         MemberFunctionProto prototype
         PlatformNumber binds # The offsets, separated per platform.
-     
 
-     # @brief An function body that should go in a source file (.cpp).
-    struct OutOfLineField:
-        MemberFunctionProto prototype
-        string inner # The body of the function as a raw string.
-     
 
+    
      # @brief A function body that should go in a header file (.hpp).
     struct InlineField:
         string inner # The body of the function as a raw string.
-     
-
+    
     struct Field:
         size_t field_id # The index of the field. This starts from 0 and counts up across all classes.
         string parent # The name of the parent class.
         # NOTE: I wrote a special function for handling "inner" in helper.cpp since Cython can't handle variants yet
-        Platform links # All the platforms that link the field
-        Platform missing # All the platforms that are missing the field
+        # Platform links # All the platforms that link the field
+        # Platform missing # All the platforms that are missing the field
 
     struct Function:
         FunctionProto prototype # The free function's signature.
         PlatformNumber binds # The offsets of free function, separated per platform.
-        Platform links # All the platforms that link the function
-        Platform missing # All the platforms that are missing the function
 
     struct Class:
+        Attributes attributes
         string name # The name of the class.
         vector[string] superclasses # Parent classes that the current class inherits.
-        vector[string] depends # Classes the current class depends on.
-                                                    # This includes parent classes, and any classes declared in a `[[depends(...)]]` attribute.
         vector[Field] fields # All the fields parsed in the class.
-
-        Platform links # All the platforms that link the class
-        Platform missing # All the platforms that are missing the class
 
     
     struct Root:
@@ -116,7 +104,6 @@ cdef extern from "include/ast.hpp" namespace "broma" nogil:
 
 cdef extern from "include/helper.hpp" nogil:
     InlineField* Field_GetAs_InlineField(Field* f)
-    OutOfLineField* Field_GetAs_OutOfLineField(Field* f)
     FunctionBindField* Field_GetAs_FunctionBindField(Field* f)
     PadField* Field_GetAs_PadField(Field* f)
     MemberField* Field_GetAs_MemberField(Field* f)
@@ -128,5 +115,22 @@ cdef extern from "include/helper.hpp" nogil:
     MemberFunctionProto* FieldGetFn(Field* field)
     Class* RootgetClassFromStr(Root* root, string name)
 
-cdef extern from "include/broma.hpp" namespace "broma" nogil:
+    # Removes Innappropreate Enum Names from being used with python 
+    # NOTE: I did not take this decision with much enthusiasm 
+    enum class PyPlatform:
+        NONE = 0
+        Mac = 1
+        Windows = 2
+        Android = 4
+        iOS = 8
+        Android32 = 16 | 4
+        Android64 = 32 | 4 
+        MacIntel = 64 | 1
+        MacArm = 128 | 1
+
+    # fixes Unacceptable/innapropreate names allowing for python to maintain compatability 
+    PyPlatform fix_platformname(Platform platform)
+
+
+cdef extern from "include/Broma/include/broma.hpp" namespace "broma" nogil:
     Root parse_file(string fname)
