@@ -71,9 +71,6 @@ The other way is to install this package globally as a zip file such as for exam
 ```
 pip install https://github.com/CallocGD/PyBroma/archive/refs/heads/main.zip
 ```
-Know that I have not compiled the sources for linux or mac yet. If you need to use this project on those 
-versions I suggest sending me a pull request with the propper platform versions you want to have me implement 
-in place.
 
 Also Some parsing Error Features may not be avalible just yet so don't complain to me if it crashes broma does not have a clean way to handle errors yet to my knowlege.
 
@@ -84,4 +81,4 @@ I don't know, I sure hope so, I see the project's overall potential to be useful
 Might make a version of this in Rust as practice for binding C/C++ libraries since I am trying to learn how to do that kind of stuff.
 
 ## Bugs
--  Platform uses the `None` Keyword Enum and this can be confusing to python users and is also uncompilable. This change is an Internal bug on broma's end and not my own fault
+- Did not test the new updated version yet...
