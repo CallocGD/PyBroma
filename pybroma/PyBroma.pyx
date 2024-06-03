@@ -17,16 +17,32 @@ cdef extern from *:
 #define DEPACK(x) *x
     """
     broma.PadField DEPACK(broma.PadField* x) 
-    broma.OutOfLineField DEPACK(broma.OutOfLineField* x)
+    # broma.OutOfLineField DEPACK(broma.OutOfLineField* x)
     broma.MemberField DEPACK(broma.MemberField* x)
     broma.InlineField DEPACK(broma.InlineField* x)
     broma.FunctionBindField DEPACK(broma.FunctionBindField* x)
     broma.Class DEPACK(broma.Class* x)
 
+
+# TODO: Apply a new property wrapper instead of needing to write __get__ & __set__ everytime
 cdef class ImmutableError(Exception):
     """Object is an immutable property and cannot mutate"""
     def __init__(self, str name):
         super().__init__(name + " is immutable")
+
+
+# Coming soon (if it's faster...)
+
+
+# cdef class immutable(property):
+#     """simillar to aiohttp's reify helper this property is given immutability"""
+#     def __init__(self, func):
+#         self.func = func 
+#         self.__doc__ = func.__doc__
+#         self.name = func.__name__
+    
+#     def __set__(self):
+#         raise ImmutableError(self.name)
 
 
 
@@ -46,15 +62,18 @@ cdef class Type:
     def __eq__(self, Type t):
         return broma.TypeEquals(self.type, t)
 
-    @property
-    def is_struct(self):
-        return self.type.is_struct
+    property is_struct:
+        def __get__(self):
+            return self.type.is_struct
 
+        def __set__(self, obj):
+            raise ImmutableError("is_struct")
 
-cdef Type make_type(broma.Type t) noexcept:
-    cdef Type ty = Type(t)
-    ty.type = t
-    return ty
+    @staticmethod
+    cdef Type init(broma.Type t) noexcept:
+        cdef Type cls = Type()
+        cls.type = t
+        return cls
 
 
 
@@ -68,10 +87,11 @@ cdef class MemberFunctionProto:
         self._args = dict()
         pass 
     
-    cdef void init(self, broma.MemberFunctionProto proto):
+    cdef void _init(self, broma.MemberFunctionProto proto):
         self.proto = proto
-        self._args = {<str>a.second : make_type(a.first) for a in proto.args}
+        self._args = {<str>a.second : Type.init(a.first) for a in proto.args}
     
+
     property args:
         def __get__(self):
             return self._args
@@ -80,46 +100,70 @@ cdef class MemberFunctionProto:
             raise ImmutableError("args")
 
     # TODO: Make More Fields Immutable
-    @property
-    def ret(self):
-        return make_type(self.proto.ret) 
-    
-    @property
-    def is_const(self):
-        return self.proto.is_const
+    property ret:
+        def __get__(self):
+            return Type.init(self.proto.ret) 
+        
+        def __set__(self, obj):
+            raise ImmutableError("ret")
 
-    @property
-    def is_virtual(self):
-        return self.proto.is_virtual
-    
-    @property
-    def is_callback(self):
-        return self.proto.is_callback
-    
-    @property
-    def is_static(self):
-        return self.proto.is_static
-    
-    @property
-    def type(self):
-        return self.proto.type
-    
-    @property
-    def docs(self):
-        return <str>self.proto.docs
+    property is_const:
+        def __get__(self):
+            return self.proto.is_const
+        
+        def __set__(self, obj):
+            raise ImmutableError("is_const")
 
-    @property
-    def name(self):
-        return <str>self.proto.name
-    
+    property is_virtual:
+        def __get__(self):
+            return self.proto.is_virtual
+
+        def __set__(self, obj):
+            raise ImmutableError("is_virtual")
+
+    property is_callback:
+        def __get__(self):
+            return self.proto.is_callback
+
+        def __set__(self, obj):
+            raise ImmutableError("is_callback")
+
+    property is_static:
+        def __get__(self):
+            return self.proto.is_static
+
+        def __set__(self, obj):
+            raise ImmutableError("is_static")
+
+    property type:
+        def __get__(self):
+            return self.proto.type
+
+        def __set__(self, obj):
+            raise ImmutableError("type")
+        
+    property docs:
+        def __get__(self):
+            return <str>self.proto.docs
+
+        def __set__(self, obj):
+            raise ImmutableError("docs")
+
+
+    property name:
+        def __get__(self):
+            return <str>self.proto.name
+        def __set__(self, obj):
+            raise ImmutableError("name")
+
     def __eq__(self, MemberFunctionProto mfp):
         return broma.MemberFunctionProtoEquals(self.proto, mfp.proto)
 
-
-cdef MemberFunctionProto make_MemberFunctionProto(broma.MemberFunctionProto proto) noexcept:
-    cdef MemberFunctionProto mfp = MemberFunctionProto()
-    mfp.init(proto)
-    return mfp
+    @staticmethod
+    cdef MemberFunctionProto init(broma.MemberFunctionProto proto) noexcept:
+        cdef MemberFunctionProto mfp = MemberFunctionProto()
+        mfp._init(proto)
+        return mfp
 
 
 cdef class MemberField:
@@ -129,49 +173,78 @@ cdef class MemberField:
     def __cinit__(self):
         pass
 
-    @property
-    def name(self):
-        return <str>self.field.name
-    
-    @property
-    def type(self):
-        return make_type(self.field.type)
-    
-    @property
-    def count(self):
-        return self.field.count
+    property name:
+        def __get__(self):
+            return <str>self.field.name
+
+        def __set__(self, obj):
+            raise ImmutableError("name")
 
 
+    property type:
+        def __get__(self):
+            return Type.init(self.field.type)
 
-cdef MemberField make_MemberField(broma.MemberField field) noexcept:
-    cdef MemberField f = MemberField()
-    f.field = field
-    return f
+        def __set__(self, obj):
+            raise ImmutableError("type")
+        
+    property count:
+        def __get__(self):
+            return self.field.count
+
+        def __set__(self, obj):
+            raise ImmutableError("count")
 
 
+    @staticmethod
+    cdef MemberField init(broma.MemberField field) noexcept:
+        cdef MemberField f = MemberField()
+        f.field = field
+        return f
 
 
-cdef class OutOfLineField:
-    cdef:
-        broma.OutOfLineField oolf
-    
+cdef class Attributes:
+    cdef broma.Attributes attributes
+
     def __cinit__(self):
-        pass
+        self._depends = []
+    
+    property docs:
+        def __get__(self):
+            return <str>self.attributes.docs
+        def __set__(self, obj):
+            raise ImmutableError("docs")
 
-    @property
-    def prototype(self):
-        return make_MemberFunctionProto(self.oolf.prototype)
+    property links:
+        def __get__(self):
+            return broma.fix_platformname(self.attributes.links)
 
-    @property
-    def inner(self):
-        return <str>self.oolf.inner
+        def __set__(self, obj):
+            raise ImmutableError("links")
+
+    property missing:
+        def __get__(self):
+            return broma.fix_platformname(self.attributes.missing)
+        
+        def __set__(self, obj):
+            raise ImmutableError("missing")
+
+    property depends:
+        def __get__(self):
+            if not self._depends:
+                self._depends = [<str>d for d in self.attributes.depends]
+            return self._depends
+        
+        def __set__(self, obj):
+            raise ImmutableError("depends")
+    
+    @staticmethod
+    cdef Attributes init(broma.Attributes attrs):
+        cdef Attributes cls = Attributes()
+        cls.attributes = attrs
+        return cls
 
 
-
-cdef OutOfLineField make_OutOfLineField(broma.OutOfLineField oolf) noexcept:
-    cdef OutOfLineField _oolf = OutOfLineField()
-    _oolf.oolf = oolf
-    return _oolf
 
 
 cdef class FunctionBindField:
@@ -179,19 +252,24 @@ cdef class FunctionBindField:
     def __cinit__(self):
         pass
 
-    @property
-    def prototype(self):
-        return make_MemberFunctionProto(self.fbf.prototype)
-    
-    @property
-    def binds(self):
-        return make_PlatfornNum(self.fbf.binds)
+    property prototype:
+        def __get__(self):
+            return MemberFunctionProto.init(self.fbf.prototype)
+        def __set__(self, obj):
+            raise ImmutableError("prototype")
 
+    property binds:
+        def __get__(self):
+            return PlatformNumber.init(self.fbf.binds)
 
-cdef FunctionBindField make_FunctionBindField(broma.FunctionBindField fbf) noexcept:
-    cdef FunctionBindField _fbf = FunctionBindField()
-    _fbf.fbf = fbf
-    return _fbf
+        def __set__(self, obj):
+            raise ImmutableError("binds")
+
+    @staticmethod
+    cdef FunctionBindField init(broma.FunctionBindField fbf) noexcept:
+        cdef FunctionBindField cls = FunctionBindField()
+        cls.fbf = fbf
+        return cls
 
 
 cdef class PadField:
@@ -199,23 +277,19 @@ cdef class PadField:
         broma.PadField pf
     def __cinit__(self): 
         pass 
-    @property
-    def amount(self):
-        return make_PlatfornNum(self.pf.amount)
 
-cdef broma.PlatformNumber dummyPadFieldattr():
-    cdef broma.PlatformNumber pn
-    pn.win = 0
-    pn.mac = 0
-    pn.android32 = 0
-    pn.android64 = 0
-    pn.ios = 0
-    return pn
+    property amount:
+        def __get__(self):
+            return PlatformNumber.init(self.pf.amount)
 
-cdef PadField make_PadField(broma.PadField pf):
-    cdef PadField _pf = PadField()
-    _pf.pf = pf
-    return _pf
+        def __set__(self, obj):
+            raise ImmutableError("amount")
+
+    @staticmethod
+    cdef PadField init(broma.PadField pf):
+        cdef PadField _pf = PadField()
+        _pf.pf = pf
+        return _pf
 
 
 cdef class Field:
@@ -228,42 +302,42 @@ cdef class Field:
     property id:
         def __get__(self):
             return self.field.field_id
+        
         def __set__(self, obj):
             raise ImmutableError("id")
 
-    @property
-    def parent(self):
-        return <str>self.field.parent
+    property parent:
+        def __get__(self):
+            return <str>self.field.parent
+
+        def __set__(self, obj):
+            raise ImmutableError("parent")
+
 
     def getAsFunctionBindField(self):
         cdef broma.FunctionBindField* x = broma.Field_GetAs_FunctionBindField(&self.field)
-        return make_FunctionBindField(DEPACK(x)) if x != nullptr else None
+        return FunctionBindField.init(DEPACK(x)) if x != nullptr else None
 
     def getAsMemberField(self):
         cdef broma.MemberField* x = broma.Field_GetAs_MemberField(&self.field)
-        return make_MemberField(DEPACK(x)) if x != nullptr else None
-
-    def getAsOutOfLineField(self):
-        cdef broma.OutOfLineField* x = broma.Field_GetAs_OutOfLineField(&self.field)
-        return make_OutOfLineField(DEPACK(x)) if x != nullptr else None
+        return MemberField.init(DEPACK(x)) if x != nullptr else None
 
     def getAsPadField(self):
         cdef broma.PadField* x = broma.Field_GetAs_PadField(&self.field)
-        return make_PadField(DEPACK(x)) if x != nullptr else None
+        return PadField.init(DEPACK(x)) if x != nullptr else None
 
-    @property
-    def missing(self):
-        return <int>self.field.missing
-
-    @property
-    def links(self):
-        return <int>self.field.links
+    # Same as broma's function which's documentation reads
+    # Convenience function to get the function prototype of the field, if the field is a function of some sort.
+    def get_fn(self):
+        fn = self.getAsFunctionBindField()
+        return fn.prototype if fn else None
 
 
-cdef Field make_Field(broma.Field field) noexcept:
-    cdef Field f = Field()
-    f.field = field
-    return f
+    @staticmethod
+    cdef Field init(broma.Field field) noexcept:
+        cdef Field f = Field()
+        f.field = field
+        return f
 
 
 cdef class PlatformNumber:
@@ -272,34 +346,57 @@ cdef class PlatformNumber:
     
     def __cinit__(self):
         pass
+
+    @staticmethod
+    cdef PlatformNumber init(broma.PlatformNumber pn) noexcept:
+        number = PlatformNumber()
+        number.binds = pn
+        return number
     
-    @property
-    def mac(self):
-        return self.binds.mac
+    property imac:
+        def __get__(self):
+            return self.binds.imac
+    
+        def __set__(self, obj):
+            raise ImmutableError("imac")
 
-    @property
-    def ios(self):
-        return self.binds.ios
+    property m1:
+        def __get__(self):
+            return self.binds.m1
 
-    @property
-    def win(self):
-        return self.binds.win
+        def __set__(self, obj):
+            raise ImmutableError("m1")
 
-    @property
-    def android32(self):
-        return self.binds.android32
+    property ios:
+        def __get__(self):
+            return self.binds.ios
 
-    @property
-    def android64(self):
-        return self.binds.android64
+        def __set__(self, obj):
+            raise ImmutableError("ios")
 
 
+    property win:
+        def __get__(self):
+            return self.binds.win
+        def __set__(self, obj):
+            raise ImmutableError("win")
+
+    property android32:
+        def __get__(self):
+            return self.binds.android32
+
+        def __set__(self, obj):
+            raise ImmutableError("android32")
+
+    property android64:
+        def __get__(self):
+            return self.binds.android64
+
+        def __set__(self, obj):
+            raise ImmutableError("android64")
 
 
-cdef PlatformNumber make_PlatfornNum(broma.PlatformNumber pn) noexcept:
-    cdef PlatformNumber f = PlatformNumber()
-    f.binds = pn
-    return f
+
 
 
 cdef class InlineField:
@@ -307,16 +404,20 @@ cdef class InlineField:
     def __cinit__(self):
         pass 
     
-    @property
-    def inner(self):
-        return <str>self._if.inner
+    property inner:
+        def __get__(self):
+            return <str>self._if.inner
+        
+        def __set__(self, obj):
+            raise ImmutableError("inner")
+
+    @staticmethod
+    cdef InlineField init(broma.InlineField _if):
+        cdef InlineField cls = InlineField()
+        cls._if = _if
+        return cls    
 
 
-
-cdef InlineField make_InlineField(broma.InlineField _if) noexcept:
-    cdef InlineField c = InlineField()
-    c._if = _if
-    return c
 
 
 cdef class FunctionProto:
@@ -329,11 +430,11 @@ cdef class FunctionProto:
         pass 
     
     
-    cdef void init(self, broma.FunctionProto proto) noexcept:
+    cdef void _init(self, broma.FunctionProto proto) noexcept:
         cdef vector[pair[broma.Type, string]] args = proto.args
         cdef size_t i
         self.proto = proto
-        self._args = {<str>args[i].second : make_type(args[i].first) for i in range(args.size())}
+        self._args = {<str>args[i].second : Type.init(args[i].first) for i in range(args.size())}
     
     property args:
         def __get__(self):
@@ -342,56 +443,74 @@ cdef class FunctionProto:
         def __set__(self, obj):
             raise ImmutableError("args")
 
+    property ret:
+        def __get__(self):
+            return Type.init(self.proto.ret) 
+
+        def __set__(self, obj):
+            raise ImmutableError("ret")
+
+    property name:
+        def __get__(self):
+            return <str>self.proto.name
+
+        def __set__(self, obj):
+            raise ImmutableError("name")
+
+    property docs:
+        def __get__(self):
+            return <str>self.proto.docs
+
+        def __set__(self, obj):
+            raise ImmutableError("docs")
+
+
+    property attributes:
+        def __get__(self):
+            return Attributes.init(self.proto.attributes)
+
+        def __set__(self, obj):
+            raise ImmutableError("attributes")
+
     @property
-    def ret(self):
-        return make_type(self.proto.ret) 
-    
-    @property 
-    def name(self):
-        return <str>self.proto.name
-    
-    @property
-    def docs(self):
-        return <str>self.proto.docs
-    
+    def attrs(self):
+        """shorthand equivilent to saying attributes"""
+        return self.attributes
 
 
-
-cdef FunctionProto make_FunctionProto(broma.FunctionProto fp) noexcept:
-    cdef FunctionProto _fp = FunctionProto() 
-    _fp.init(fp)
-    return _fp
+    @staticmethod
+    cdef FunctionProto init(broma.FunctionProto fp) noexcept:
+        cdef FunctionProto _fp = FunctionProto() 
+        _fp._init(fp)
+        return _fp
 
 
 cdef class Function:
     cdef:
         broma.Function func
-    def __init__(self):
+
+    def __cinit__(self):
         pass
     
-    @property
-    def prototype(self):
-        return make_FunctionProto(self.func.prototype)
+    property prototype:
+        def __get__(self):
+            return FunctionProto.init(self.func.prototype)
 
-    @property
-    def binds(self):
-        return make_PlatfornNum(self.func.binds)
-    
-    @property
-    def missing(self):
-        return self.func.missing
+        def __set__(self, obj):
+            raise ImmutableError("prototype")
 
-    @property
-    def links(self):
-        return self.func.links
+    property binds:
+        def __get__(self):
+            return PlatformNumber.init(self.func.binds)
+        
+        def __set__(self, obj):
+            raise ImmutableError("binds")
 
-
-
-
-cdef Function make_Function(broma.Function func) noexcept:
-    cdef Function fn = Function()
-    fn.func = func
-    return fn
+    @staticmethod
+    cdef Function init(broma.Function func) noexcept:
+        cdef Function fn = Function()
+        fn.func = func
+        return fn
 
 
 cdef class Class:
@@ -441,64 +560,83 @@ cdef class Class:
         def __set__(self, obj):
             raise ImmutableError("superclass")
 
-    property depends:
-        def __get__(self):
-            cdef size_t i
-            # Have we made these into a list?
-            if not self._depends_ran:
-                self._depends = [self._cls.depends[i] for i in range(self._cls.depends.size())]
-                self._depends_ran = True
-            return self._depends
-
-        def __set__(self, obj):
-            raise ImmutableError("depends")
-
     property fields:
         def __get__(self):
-            return [make_Field(f) for f in self._cls.fields]
+            return [Field.init(f) for f in self._cls.fields]
         def  __set__(self, obj):
             raise ImmutableError("fields")
     
-cdef make_Class(broma.Class cls):
-    cdef Class _cls = Class()
-    _cls._cls = cls
-    return _cls
+    property attributes:
+        def __get__(self):
+            return Attributes.init(self._cls.attributes)
+        def __set__(self, obj):
+            raise ImmutableError("attributes")
+    
+    @property
+    def attrs(self):
+        """shorthand equivilent to saying attributes"""
+        return self.attributes
+
+    @staticmethod
+    cdef Class init(broma.Class cls):
+        cdef Class _cls = Class()
+        _cls._cls = cls
+        return _cls
+
+    def __eq__(self, object other):
+
+        if isinstance(other, str):
+            return (<str>self._cls.name) == other
+        
+        elif isinstance(other, Class):
+            return (<str>self._cls.name) == (<str>other._cls.name)
+        
+        else:
+            raise ValueError("pybroma.Class can only be checked against strings and other pybroma.Class Types")
+
     
 
 cdef class Root:
     cdef:
         broma.Root root
+        list _functions
+        list _classes
 
     def __init__(self, str fileName):
         self.root = broma.parse_file(<string>fileName)
+        self._functions = []
+        self._classes = []
+
+        self._optimized_class_dict = {<str>c.name: Class.init(c) for c in self.root.classes}
 
     def __getitem__(self, str _class_name_):
-        cdef Class c
-        cdef broma.Class* _class_ = broma.RootgetClassFromStr(&self.root, <string>_class_name_)
-        if _class_ == NULL:
-            return None 
-        else:
-            return make_Class(DEPACK(_class_))
-
-    @property 
-    def functions(self):
-        return [make_Function(x) for x in self.root.functions]
-
-    @property
-    def classes(self):
-        return [make_Class(x) for x in self.root.classes]
+        return self._optimized_class_dict[_class_name_]
     
-
-    @property
-    def functions(self):
-        return [make_Function(x) for x in self.root.functions]
+    property functions:
+        def __get__(self):
+            if not self._functions:
+                self._functions = [Function.init(x) for x in self.root.functions]
+            return self._functions
         
+        def __set__(self, obj):
+            raise ImmutableError("functions")
+
+    property classes:
+        def __get__(self):
+            if not self._classes:
+                self._classes = [Class.init(x) for x in self.root.classes]
+            return self._classes
+        
+        def __set__(self, obj):
+            raise ImmutableError("classes")
+
+    # NOTE: Deprecation will be soon for classesAsDict & functionsAsDict Use __getitem__ instead...
     def functionsAsDict(self) -> dict:
         """Converts Functions to A Dictionary"""
-        return {<str>c.prototype.name: make_Function(c) for c in self.root.functions}
+        return {<str>c.prototype.name: Function.init(c) for c in self.root.functions}
 
     def classesAsDict(self) -> dict:
         """Converts Classes to a dictionary"""
-        return {<str>c.name:make_Class(c) for c in self.root.classes}
+        return {<str>c.name: Class.init(c) for c in self.root.classes}
 
 
