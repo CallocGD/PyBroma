@@ -22,9 +22,6 @@ class BromaTreeVisitor:
     def visit_MemberField(self, node:MemberField):
         pass 
 
-    def visit_OutOfLineField(self, node:OutOfLineField):
-        self.visit_MemberFunctionProto(node.prototype)
-
     def visit_PadField(self, node:PadField):
         self.visit_FunctionProto(node)
  
