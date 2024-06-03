@@ -1,11 +1,13 @@
 """Inspried by Cython's code writer this visitor can be used for writing custom broma code and modifying it"""
 
-from pybroma.PyBroma import Class, Function
+from .PyBroma import Class, Function # type: ignore
 from .visitor import BromaTreeVisitor
 from .external import LinesResult
-from .PyBroma import *
+from .PyBroma import * # type: ignore
 from .platforms import Platform
 
+
+# TODO: This is still a work in progress...
 class BromaWriter(BromaTreeVisitor):
     """Inspired By Cython's Code-writer but For writing Broma Files..."""
     

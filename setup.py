@@ -19,7 +19,7 @@ def compilePyBroma():
                     include_dirs=[
                         "pybroma/include",
                         "prbroma/include/Broma",
-                        "prbroma/include/Broma/include",
+                        "pybroma/include/broma/include",
                         "pybroma/include/Broma/ghc",
                         "pybroma/include/Broma/PEGTL-3.2.7/include",
                         "prbroma/include/Broma/PEGTL-3.2.7/include/tao",

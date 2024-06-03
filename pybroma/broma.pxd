@@ -8,7 +8,7 @@ from libcpp.utility cimport pair
 
 ctypedef long long ptrdiff_t
 
-cdef extern from "include/Broma/include/ast.hpp" namespace "broma" nogil:
+cdef extern from "include/broma/include/ast.hpp" namespace "broma" nogil:
     
     enum class Platform:
         pass
