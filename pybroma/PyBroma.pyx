@@ -601,7 +601,8 @@ cdef class Root:
         broma.Root root
         list _functions
         list _classes
-
+        dict _optimized_class_dict
+        
     def __init__(self, str fileName):
         self.root = broma.parse_file(<string>fileName)
         self._functions = []
