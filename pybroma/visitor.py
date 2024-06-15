@@ -47,7 +47,7 @@ class BromaTreeVisitor:
 
     def visit_Class(self, node:Class):
         if node.attrs.links:
-            self.visit_Attributes()
+            self.visit_Attributes(node.attrs)
         for f in node.fields:
             self.visit_Field(f)
     
