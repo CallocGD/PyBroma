@@ -142,13 +142,17 @@ cdef class MemberFunctionProto:
         def __set__(self, obj):
             raise ImmutableError("type")
         
-    property docs:
+    property attributes:
         def __get__(self):
-            return <str>self.proto.docs
-
+            return Attributes.init(self.proto.attributes)
         def __set__(self, obj):
-            raise ImmutableError("docs")
+            raise ImmutableError("attributes")
 
+    property attrs:
+        def __get__(self):
+            return Attributes.init(self.proto.attributes)
+        def __set__(self, obj):
+            raise ImmutableError("attrs")
 
     property name:
         def __get__(self):
@@ -204,7 +208,9 @@ cdef class MemberField:
 
 
 cdef class Attributes:
-    cdef broma.Attributes attributes
+    cdef: 
+        broma.Attributes attributes
+        list _depends
 
     def __cinit__(self):
         self._depends = []
@@ -217,7 +223,7 @@ cdef class Attributes:
 
     property links:
         def __get__(self):
-            return broma.fix_platformname(self.attributes.links)
+            return <int>self.attributes.links
 
         def __set__(self, obj):
             raise ImmutableError("links")
@@ -326,6 +332,10 @@ cdef class Field:
         cdef broma.PadField* x = broma.Field_GetAs_PadField(&self.field)
         return PadField.init(DEPACK(x)) if x != nullptr else None
 
+    def getAsInlineField(self):
+        cdef broma.InlineField* x = broma.Field_GetAs_InlineField(&self.field)
+        return InlineField.init(DEPACK(x)) if x != nullptr else None
+
     # Same as broma's function which's documentation reads
     # Convenience function to get the function prototype of the field, if the field is a function of some sort.
     def get_fn(self):
@@ -395,8 +405,22 @@ cdef class PlatformNumber:
         def __set__(self, obj):
             raise ImmutableError("android64")
 
-
-
+    def platforms_as_dict(self):
+        """Transforms the platform data given into a dictionary"""
+        cdef dict d = {}
+        if self.binds.imac > 0:
+            d["imac"] = hex(self.binds.imac)
+        if self.binds.m1 > 0:
+            d["m1"] = hex(self.binds.m1)
+        if self.binds.ios > 0:
+            d["ios"] = hex(self.binds.ios)
+        if self.binds.win > 0:
+            d["win"] = hex(self.binds.win)
+        if self.binds.android32 > 0:
+            d["android32"] = hex(self.binds.android32)
+        if self.binds.android64 > 0:
+            d["android64"] = hex(self.binds.android64)
+        return d
 
 
 cdef class InlineField:
@@ -535,12 +559,6 @@ cdef class Class:
         def __set__(self, obj):
             raise ImmutableError("name")
 
-    property links:
-        def __get__(self):
-            return <str>self._cls.name
-        def __set__(self, obj):
-            raise ImmutableError("links")
-    
     property missing:
         def __get__(self):
             # TODO: Make Python Enum for defining Platform so that None is not used...

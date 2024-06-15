@@ -14,10 +14,16 @@ class BromaTreeVisitor:
 
     def visit_MemberFunctionProto(self, node:MemberFunctionProto):
         return
+    
+    def visit_Attributes(self, node:Attributes):
+        return
+    
+    def visit_InlineField(self, node:InlineField):
+        return 
 
     def visit_FunctionBindField(self, node:FunctionBindField):
-        self.visit_PlatformNumber(node.binds)
         self.visit_MemberFunctionProto(node.prototype)
+        self.visit_PlatformNumber(node.binds)
 
     def visit_MemberField(self, node:MemberField):
         pass 
@@ -30,16 +36,18 @@ class BromaTreeVisitor:
             self.visit_FunctionBindField(x)
         elif x := f.getAsMemberField():
             self.visit_MemberField(x)
-        elif x := f.getAsOutOfLineField():
-            self.visit_OutOfLineField(x)
         elif x := f.getAsPadField():
             self.visit_PadField(x)
+        elif x := f.getAsInlineField():
+            self.visit_InlineField(x)
 
     def visit_Function(self, node:Function):
-        self.visit_PlatformNumber(node.binds)
         self.visit_FunctionProto(node.prototype)
+        self.visit_PlatformNumber(node.binds)
 
     def visit_Class(self, node:Class):
+        if node.attrs.links:
+            self.visit_Attributes()
         for f in node.fields:
             self.visit_Field(f)
     
