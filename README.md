@@ -82,3 +82,12 @@ Might make a version of this in Rust as practice for binding C/C++ libraries sin
 
 ## Bugs
 - Did not test the new updated version yet...
+
+## TODOS
+
+- [X] Broma Writer/Formatter 
+- [ ] Class member injector (For helping with pull requests to the bindings)
+- [ ] I'm rethinking about the possiblity of a pypi release if I can find a self-hosted 2FA software thingy
+
+
+
