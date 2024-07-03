@@ -55,7 +55,7 @@ more efficiently. Including creating ghidra headerfiles that ghidra can understa
 - To go far beyond the scope of what broma is actually being used for such as reverse engineering. 
 
 ## Cool When Pypi Release?
-I may not get to that due to the required 2FA stuff because scammers were using pypi to host malicious malware.  
+I may not get to that due to the required 2FA stuff because scammers were using pypi to host malicious malware. I hear you can use a usb stick (thumbdrive) so know that I am thinking about buying up a few more usb sticks for this.
 
 # How To Install
 You need to clone this repository locally to install the library:
@@ -73,8 +73,8 @@ I don't know, I sure hope so, I see the project's overall potential to be useful
 ## Anything else
 Might make a version of this in Rust as practice for binding C/C++ libraries since I am trying to learn how to do that kind of stuff.
 
-## Bugs
-- Did not test the new updated version yet...
+## Bugs 
+- No Bugs Right now. All bugs have been apparently patched.
 
 ## TODOS
 
