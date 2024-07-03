@@ -58,19 +58,12 @@ more efficiently. Including creating ghidra headerfiles that ghidra can understa
 I may not get to that due to the required 2FA stuff because scammers were using pypi to host malicious malware.  
 
 # How To Install
-There's 2 ways to do this but the conventional way is to install GIT and use it locally.
+You need to clone this repository locally to install the library:
+1. `git clone https://github.com/CallocGD/PyBroma.git --recursive`
+2. `python setup.py build_ext --inplace`
+3. `pip install -U .`
 
-```
-git clone https://github.com/CallocGD
-```
-```
-python setup.py build_ext --inplace
-```
-
-The other way is to install this package globally as a zip file such as for example 
-```
-pip install https://github.com/CallocGD/PyBroma/archive/refs/heads/main.zip
-```
+Installation using a zip archive of the repository is not available because it doesn't contain the broma submodule.
 
 Also Some parsing Error Features may not be avalible just yet so don't complain to me if it crashes broma does not have a clean way to handle errors yet to my knowlege.
 
@@ -88,6 +81,3 @@ Might make a version of this in Rust as practice for binding C/C++ libraries sin
 - [X] Broma Writer/Formatter 
 - [ ] Class member injector (For helping with pull requests to the bindings)
 - [ ] I'm rethinking about the possiblity of a pypi release if I can find a self-hosted 2FA software thingy
-
-
-
