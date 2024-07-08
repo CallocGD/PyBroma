@@ -31,8 +31,8 @@ def compilePyBroma():
                     # extra_link_args=[],
                     # We need this to be /std:c++17 on windows otherwise compilation will break due to the existance of "std::variant"
                     extra_compile_args=[
-                        "/O2",
-                        ("/std:c++17" if sys.platform == "win32" else "--std:c++17"),
+                        ("/O2" if sys.platform == "win32" else "-O2"),
+                        ("/std:c++17" if sys.platform == "win32" else "--std=c++17"),
                     ],
                 )
             ]
