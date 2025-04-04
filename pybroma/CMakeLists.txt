@@ -14,6 +14,7 @@ add_custom_command(
 add_library(${PROJECT_NAME} MODULE ${CYTHON_SRC})
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${Python_INCLUDE_DIRS})
+target_link_directories(${PROJECT_NAME} PRIVATE ${Python_LIBRARY_DIRS})
 target_link_libraries(${PROJECT_NAME} PRIVATE Broma)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
