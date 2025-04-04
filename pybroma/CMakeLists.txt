@@ -16,8 +16,5 @@ add_library(${PROJECT_NAME} MODULE ${CYTHON_SRC})
 target_include_directories(${PROJECT_NAME} PRIVATE ${Python_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PRIVATE Broma)
 
-if (UNIX)
-    set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".so")
-endif()
-
+set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
 install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX})
