@@ -3,9 +3,8 @@ on: [push, pull_request]
 
 jobs:
   build:
-    fail-fast: false
-
     strategy:
+      fail-fast: false
       matrix:
         config:
           - name: Windows
