@@ -1,8 +1,8 @@
 #ifndef __HELPER_HPP__
 #define __HELPER_HPP__
 
-#include "Broma/include/broma.hpp"
-#include "Broma/include/ast.hpp"
+#include <broma.hpp>
+#include <ast.hpp>
 
 /* Used as a primary helpers around Field's variant and other Types since variants
 are not supported by cython yet as far as I am aware... */

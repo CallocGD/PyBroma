@@ -1,3 +1,0 @@
-[submodule "pybroma/include/broma"]
-	path = pybroma/include/broma
-	url = https://github.com/geode-sdk/broma
