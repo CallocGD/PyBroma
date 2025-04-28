@@ -58,12 +58,8 @@ more efficiently. Including creating ghidra headerfiles that ghidra can understa
 I may not get to that due to the required 2FA stuff because scammers were using pypi to host malicious malware. I hear you can use a usb stick (thumbdrive) so know that I am thinking about buying up a few more usb sticks for this.
 
 # How To Install
-You need to clone this repository locally to install the library:
-1. `git clone https://github.com/CallocGD/PyBroma.git --recursive`
-2. `python setup.py build_ext --inplace`
-3. `pip install -U .`
-
-Installation using a zip archive of the repository is not available because it doesn't contain the broma submodule because of it not being in a mature state as of yet and it has been subject to constantly changing.
+Run this command to install the library:
+`pip install git+https://github.com/CallocGD/PyBroma`
 
 Also Some parsing Error Features may not be avalible just yet so don't complain to me if it crashes broma does not have a clean way to handle errors yet to my knowlege.
 

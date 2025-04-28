@@ -8,7 +8,7 @@ from libcpp.utility cimport pair
 
 ctypedef long long ptrdiff_t
 
-cdef extern from "include/broma/include/ast.hpp" namespace "broma" nogil:
+cdef extern from "ast.hpp" namespace "broma" nogil:
     
     enum class Platform:
         pass
@@ -102,7 +102,7 @@ cdef extern from "include/broma/include/ast.hpp" namespace "broma" nogil:
 
 
 
-cdef extern from "include/helper.hpp" nogil:
+cdef extern from "helper.hpp" nogil:
     InlineField* Field_GetAs_InlineField(Field* f)
     FunctionBindField* Field_GetAs_FunctionBindField(Field* f)
     PadField* Field_GetAs_PadField(Field* f)
@@ -132,5 +132,5 @@ cdef extern from "include/helper.hpp" nogil:
     PyPlatform fix_platformname(Platform platform)
 
 
-cdef extern from "include/Broma/include/broma.hpp" namespace "broma" nogil:
+cdef extern from "broma.hpp" namespace "broma" nogil:
     Root parse_file(string fname)

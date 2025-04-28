@@ -1,4 +1,11 @@
 *.pyd
 build
+
+# Auto-generated/output files
+_skbuild/
+*.egg-info/
+pybroma/PyBroma.cpp
+*.whl
+
 # External unittests I'll make a seperate repo for these in the future - Calloc
 tests
